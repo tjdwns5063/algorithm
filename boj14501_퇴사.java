@@ -7,60 +7,100 @@ import java.io.*;
 import java.util.*;
 import java.math.*;
 
+//dfs풀이
+// public class boj14501_퇴사 {
+//     static int n;
+//     static int[] times = new int[16];
+//     static int[] prices = new int[16];
+//     static int ans = 0;
+//     static int total = 0;
+//     public static void main(String[] args) throws IOException {
+//         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+//         n = Integer.parseInt(br.readLine());
+//         for (int i = 0; i < n; ++i) {
+//             StringTokenizer st = new StringTokenizer(br.readLine());
+
+//             int time = Integer.parseInt(st.nextToken());
+//             int price = Integer.parseInt(st.nextToken());
+
+//             times[i + 1] = time;
+//             prices[i + 1] = price;
+//         }
+
+//         for (int i = 1; i <= n; ++i) {
+//             total = 0;
+//             boolean[] visited = new boolean[16]; 
+//             dfs(i, visited);
+//         }
+//         System.out.println(ans);
+//     }
+
+//     private static void dfs(int idx, boolean[] visited) {
+//         if (idx > n) {
+//             ans = Math.max(ans, total);
+//             return ;
+//         }
+//         for (int i = idx; i <= n; ++i) {
+//             if (visited[i])
+//                 continue ;
+//             visited[i] = true;
+//             if (i + times[i] <= n + 1) {
+//                 total += prices[i];
+//             }
+//             dfs(i + times[i], visited);
+//             visited[i] = false;
+//             if (i + times[i] <= n + 1) {
+//                 total -= prices[i];
+//             }
+//         }
+//     }
+// }
+
+//dp풀이
+//time = 2sec
+//space = 512mb
+// n = 1 <= n <= 15
+// timeComplex = O(n)
+
+
 public class boj14501_퇴사 {
+    static int n;
+    static int[] times = new int[16];
+    static int[] prices = new int[16];
+    static int[] dp = new int[16];
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[] times = new int[16];
-        int[] prices = new int[16];
-        int[][] dp = new int[16][16];
 
+        n = Integer.parseInt(br.readLine());
         for (int i = 0; i < n; ++i) {
             StringTokenizer st = new StringTokenizer(br.readLine());
 
             int time = Integer.parseInt(st.nextToken());
             int price = Integer.parseInt(st.nextToken());
 
-            times[i + 1] = time;
-            prices[i + 1] = price;
+            times[i] = time;
+            prices[i] = price;
         }
 
-        for (int i = 1; i <= 15; ++i) {
-            dp[i][0] = (i + times[i] <= n+1) ? prices[i] : 0;
-        }
-
-        for (int i = 1; i <= 15; ++i) {
-            for (int j = 1; j <= 15; ++j) {
-                if (i + times[i] < j && j + times[j] <= n + 1) {
-                    if (j-1 + times[j-1] <= j) {
-                        dp[i][j] = dp[i][j-1] + prices[j];
-                    } else {
-                        dp[i][j] = dp[i][i + times[i]] + prices[j];
-                    }
-                } else {
-                    if (j == i + times[i] && j + times[j] <= n + 1)
-                        dp[i][j] = dp[i][j-1] + prices[j];
-                    else
-                        dp[i][j] = dp[i][j-1];
-                }
+        for (int i = 0; i < n; ++i) {
+            if (i + times[i] <= n) {
+                dp[i + times[i]] = Math.max(dp[i + times[i]], dp[i] + prices[i]);
             }
-        }
-
-        // printDp(dp, n);
-        int ans = 0;
-
-        for (int i = 1; i <= n; ++i) {
-            ans = Math.max(dp[i][n], ans);
-        }
-        System.out.println(ans);
+            dp[i + 1] = Math.max(dp[i + 1], dp[i]);
+        }        
+        // printDp();
+        System.out.println(dp[n]);
     }
 
-    private static void printDp(int[][] dp, int n) {
+    private static void printDp() {
         for (int i = 1; i <= n; ++i) {
-            for (int j = 0; j <= n; ++j) {
-                System.out.print(dp[i][j] + " ");
-            }
-            System.out.println();
+            System.out.print(i + " ");
+        }
+        System.out.println();
+
+        for (int i = 1; i <= n; ++i) {
+            System.out.print(dp[i] + " ");
         }
     }
 }
